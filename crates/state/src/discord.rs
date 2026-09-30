@@ -295,14 +295,12 @@ impl Discord {
             || settings.artwork_for_local_files();
         Shown::On(Box::new(Presence {
             source: named,
-            details: fit_text(&track.name).unwrap_or_else(anonymous_details),
-            state: fit_text(&track.artists),
+            details: fit_text(&format!("Listening {}", track.name)).unwrap_or_else(anonymous_details),
+            state: Some("with NOVA MUSIC".to_string()),
             image: self.artwork(track, public_art, lookup, cx),
-            image_text: fit_text(&track.album),
+            image_text: fit_text(&track.artists),
             started_at,
-            ends_at: started_at
-                .filter(|_| duration > 0)
-                .map(|started_at| started_at.saturating_add(duration)),
+            ends_at: None,
             buttons: buttons(settings, session, provider.zip(track.id.as_deref())),
         }))
     }
@@ -540,23 +538,16 @@ fn buttons(
     track: Option<(&dyn MusicProvider, &str)>,
 ) -> Option<Vec<Button>> {
     let mut buttons = Vec::new();
-    if settings.discord_provider_button()
-        && let Some((provider, id)) = track
-        && let shelf = Shelf::of(id)
-        && !matches!(shelf, Shelf::Local)
-        && let Some(url) = session
-            .client_of(shelf)
-            .and_then(|client| client.share_url(MediaKind::Track, id))
-    {
+    if settings.discord_provider_button() {
         buttons.push(Button {
-            label: format!("Listen on {}", provider.name()).to_string(),
-            url,
+            label: "JOIN OUR OFFICIAL SERVER".to_string(),
+            url: SONORA_URL.to_string(),
         });
     }
     if settings.discord_sonora_button() {
         buttons.push(Button {
-            label: "JOIN OUR OFFICIAL SERVER".to_string(),
-            url: SONORA_URL.to_string(),
+            label: "Download NOVA MUSIC".to_string(),
+            url: "https://github.com/divyangpatel402/nova-music/releases/latest".to_string(),
         });
     }
     (!buttons.is_empty()).then_some(buttons)
