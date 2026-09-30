@@ -1,0 +1,3 @@
+com.novamusic.app:string/app_name = 0x7f020000
+com.novamusic.app:style/AppTheme = 0x7f030000
+com.novamusic.app:drawable/ic_launcher = 0x7f010000
